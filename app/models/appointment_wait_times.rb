@@ -1,7 +1,7 @@
 class AppointmentWaitTimes < ApplicationRecord
   CATEGORIES = %i[
     visitor
-    student_exchange_visitor,
+    student_exchange_visitor
     other_non_immigrant
   ]
 

@@ -17,15 +17,15 @@ FetchWaitTimes = Struct.new(:consulate) do
     @doc ||= Nokogiri::HTML(open(uri, ssl_verify_mode: OpenSSL::SSL::VERIFY_NONE))
   end
 
-  def wait_times
-    %i[ visitor student_exchange_visitor other_non_immigrant ].zip(doc.text.split(/\s*,\s*/).take(3).map(&:to_i)).to_h
-  end
-
   def categories
     AppointmentWaitTimes::CATEGORIES
   end
 
-  def call
+  def wait_times
     categories.zip(doc.text.split(/\s*,\s*/).take(categories.size).map(&:to_i)).to_h
+  end
+
+  def call
+    AppointmentWaitTimes.new(consulate: consulate, **wait_times)
   end
 end
