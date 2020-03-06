@@ -7,8 +7,6 @@ FetchWaitTimes = Struct.new(:consulate) do
   URI_HOST = "travel.state.gov"
   URI_PATH = "/content/travel/resources/database/database.getVisaWaitTimes.html"
 
-  CATEGORIES = %i[ visitor student_exchange_visitor other_non_immigrant ]
-
   delegate :code, to: :consulate, prefix: true
 
   def uri
@@ -19,11 +17,15 @@ FetchWaitTimes = Struct.new(:consulate) do
     @doc ||= Nokogiri::HTML(open(uri, ssl_verify_mode: OpenSSL::SSL::VERIFY_NONE))
   end
 
+  def categories
+    AppointmentWaitTimes::CATEGORIES
+  end
+
   def wait_times
-    %i[ visitor student_exchange_visitor other_non_immigrant ].zip(doc.text.split(/\s*,\s*/).take(3).map(&:to_i)).to_h
+    categories.zip(doc.text.split(/\s*,\s*/).take(categories.size).map(&:to_i)).to_h
   end
 
   def call
-    CATEGORIES.zip(doc.text.split(/\s*,\s*/).take(CATEGORIES.size).map(&:to_i)).to_h
+    AppointmentWaitTimes.new(consulate: consulate, **wait_times)
   end
 end

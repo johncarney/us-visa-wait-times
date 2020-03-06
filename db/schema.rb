@@ -10,11 +10,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_07_17_204054) do
+ActiveRecord::Schema.define(version: 2019_07_18_185420) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "plpgsql"
+
+  create_table "appointment_wait_times", force: :cascade do |t|
+    t.bigint "consulate_id", null: false
+    t.integer "visitor", default: 0, null: false
+    t.integer "student_exchange_visitor", default: 0, null: false
+    t.integer "other_non_immigrant", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["consulate_id"], name: "index_appointment_wait_times_on_consulate_id"
+  end
 
   create_table "consulates", force: :cascade do |t|
     t.citext "name", null: false
@@ -24,4 +34,5 @@ ActiveRecord::Schema.define(version: 2019_07_17_204054) do
     t.index ["code", "name"], name: "index_consulates_on_code_and_name", unique: true
   end
 
+  add_foreign_key "appointment_wait_times", "consulates", on_delete: :cascade
 end
